@@ -137,7 +137,7 @@ UI continua com polling leve no banco (1-2s) — banco já atualizado pelo contr
 - [x] MainWindow com status OPC UA e seleção de processos
 
 ## Pendente (por fase)
-- [ ] **F1:** IOpcUaService, OpcUaService consolidado, TagSubscriptionManager
+- [x] **F1:** IOpcUaService, OpcUaService consolidado, TagSubscriptionManager ✅
 - [ ] **F2:** SymbolicTagResolver (consulta tblEM, tblEmBIN, tblUNIT, tblProcessObjectsEM)
 - [ ] **F3:** BaseProcessController, ProcessControllerFactory, controllers Batch/Discrete/Mill/TransportWithMixture/Site
 - [ ] **F4:** Portar regras de negócio de cada tipo de processo (ler VB.NET como spec)
