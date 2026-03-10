@@ -144,11 +144,11 @@ UI continua com polling leve no banco (1-2s) — banco já atualizado pelo contr
 ## Pendente (por fase)
 - [x] **F1:** IOpcUaService, OpcUaService consolidado, TagSubscriptionManager ✅
 - [x] **F2:** SymbolicTagResolver ✅ — ProcessStructure.cs (Objects5G) + SymbolicTagResolver.cs (Controller5G/OpcUA)
-- [ ] **F3:** BaseProcessController, ProcessControllerFactory, controllers Batch/Discrete/Mill/TransportWithMixture/Site
+- [x] **F3:** BaseProcessController, ProcessControllerFactory, controllers Batch/Discrete/Mill/TransportWithMixture/Site ✅
 - [ ] **F4:** Portar regras de negócio de cada tipo de processo (ler VB.NET como spec)
 - [ ] **F5:** Subscriptions OPC UA substituindo polling de tags
 - [ ] Endpoint OPC UA em config (não hardcoded)
-- [ ] Inicialização dos controllers no App.xaml.cs
+- [x] Inicialização dos controllers no App.xaml.cs ✅
 
 ---
 
