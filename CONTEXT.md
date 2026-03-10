@@ -23,14 +23,19 @@ Retrofit de um gerenciador de receitas industriais (fábricas/processos de produ
 `aetNIT01` em `.\SQLEXPRESS`, autenticação Windows.
 
 Tabelas principais:
-- `tblProcess` — processos ativos (tipos: Batch, Discrete, Mill, Transport, TransportWithMixture, Site)
 - `tblPLCCommand` — fila de comandos UI→PLC (status: 0=Wait, 1=Executing, 2=Executed, 99=Error)
 - `tblOrder` — pedidos de produção
 - `tblOrderComponent` — componentes do pedido (Source/Sink)
+- `tblProcess` — processos ativos; colunas extras relevantes: `idDBProcess` (DB do processo no TIA), `idDBParameter` (DB de parâmetros), `usesRecipe`, `usesProcessParameter`, `qttProcessParameterVal`, `qttProcessParameterBit` (tamanho UDT de parâmetros do processo)
 - `tblEM` — DB do PLC associada ao processo (ex: EM999 → TRFA-02, DB "DB_TRFA02")
 - `tblEmBIN` — relação EM ↔ silo (define índice do silo no array da DB)
 - `tblProcessObjectsEM` — qual EM é origem e qual é destino por processo
 - `tblUNIT` — unidades do processo, define tipo de UDT (16+16, 32+32, 64+64 int+bit)
+- `tblUnitClass` — define quantidades de parâmetros por classe de Unit (`qttOrderParameterVal`, `qttOrderParameterBit`, `qttOrderParameterInt`, `qttOrderParameterTxt`)
+- `tblUnitEm` — sequência de EMs dentro de uma Unit (`idSequence`, `idUnit`, `idEm`)
+- `tblProcessUnit` — qual Unit pertence a qual processo (`idSequence`, `idProcess`, `idUnit`)
+- `tblProcessRecipe` — receitas do processo; `idDB` aponta para DB TIA Portal da receita (`idProcess`, `idRecipe`, `isMaster`, `recipeName`, `recipeDataSet`, `idDB`)
+- `tblProcessController` — controladores registrados; `statusPLC`/`statusOPC` indicam conectividade; `STATIONNAME` identifica o servidor (`idController`, `controllerName`, `idType`, `statusPLC`, `statusOPC`, `lastUpdate`, `enabled`, `STATIONNAME`)
 - `tblBin` — silos
 - `tblProduct` — produtos
 - `tblBinClass`, `tblBinPriority`, `tblBinPriorityGroup` — classificação/prioridade de silos
@@ -138,7 +143,7 @@ UI continua com polling leve no banco (1-2s) — banco já atualizado pelo contr
 
 ## Pendente (por fase)
 - [x] **F1:** IOpcUaService, OpcUaService consolidado, TagSubscriptionManager ✅
-- [ ] **F2:** SymbolicTagResolver (consulta tblEM, tblEmBIN, tblUNIT, tblProcessObjectsEM)
+- [x] **F2:** SymbolicTagResolver ✅ — ProcessStructure.cs (Objects5G) + SymbolicTagResolver.cs (Controller5G/OpcUA)
 - [ ] **F3:** BaseProcessController, ProcessControllerFactory, controllers Batch/Discrete/Mill/TransportWithMixture/Site
 - [ ] **F4:** Portar regras de negócio de cada tipo de processo (ler VB.NET como spec)
 - [ ] **F5:** Subscriptions OPC UA substituindo polling de tags
@@ -154,3 +159,7 @@ UI continua com polling leve no banco (1-2s) — banco já atualizado pelo contr
 - `IdPLCOrder` é gerado como random 4 dígitos de Ticks no momento da criação do pedido
 - `OrderStatus` enum: 0=NULL, 10=Running, 20=Waiting, 60=Finished, 80=PLCFailure
 - Cada processo pode ter múltiplas unidades (tblUNIT) e múltiplos silos (tblEmBIN)
+- NodeId pattern: `ns=3;s="TRFA-01_DB"."PrcDataFormula"[unitSeq]."Un001"."Em999"."Sink"[binSeq]."ValueTarget"`
+- DB name convention: `{idProcess}_DB` → `"TRFA-01_DB"`, `"LI1D-03_DB"`
+- TIA Portal DB structure: PrcDataControl (controle) + PrcDataFormula[N] (units) → cada unit tem Par + EMs → cada EM tem Sink[N] ou Source[N] → cada item tem StrNr (Int) e ValueTarget (DInt)
+- tblProcessObjectsEM determina role: se idEmSource = idEm então "Source", senão "Sink"
